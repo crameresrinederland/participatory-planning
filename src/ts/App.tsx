@@ -26,6 +26,7 @@ import CreateBuilding from "./widget/CreateBuilding";
 import CreatePath from "./widget/CreatePath";
 import DrawWidget from "./widget/DrawWidget";
 import GlTFWidget from "./widget/GlTFWidget";
+import LineOfSight from "./widget/LineOfSight"
 import SymbolGallery, { SymbolGroupId } from "./widget/SymbolGallery";
 import WidgetBase from "./widget/WidgetBase";
 
@@ -81,6 +82,9 @@ export default class App extends WidgetBase {
   private symbolGallery = new SymbolGallery({app: this});
 
   private glTFWidget = new GlTFWidget({app: this});
+
+  private LineOfSight = new LineOfSight({app: this});
+
 
   @property()
   private selectedWidget: DrawWidget | null = null;
@@ -154,6 +158,11 @@ export default class App extends WidgetBase {
         this.showWidget(this.glTFWidget, element);
       },
     });
+    this.mainMenuEntries.push({
+      label: "Line Of Sight",
+      iconName: "fas fa-layer-group",
+      onClick: this.showWidget.bind(this, this.LineOfSight),
+    });
 
     this.scene.map.when(() => {
       this.thumbnailUrl = this.scene.map.portalItem.getThumbnailUrl(400);
@@ -184,6 +193,8 @@ export default class App extends WidgetBase {
             <div class="hide" afterCreate={ this.attachWidget.bind(this, this.createBuilding) } />
             <div class="hide" afterCreate={ this.attachWidget.bind(this, this.symbolGallery) } />
             <div class="hide" afterCreate={ this.attachWidget.bind(this, this.glTFWidget)} />
+            <div class="hide" afterCreate={ this.attachWidget.bind(this, this.LineOfSight)} />
+
           </div>
           <div class="bottom">
             <div class="menu">
