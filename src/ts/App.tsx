@@ -26,9 +26,9 @@ import CreateBuilding from "./widget/CreateBuilding";
 import CreatePath from "./widget/CreatePath";
 import DrawWidget from "./widget/DrawWidget";
 import GlTFWidget from "./widget/GlTFWidget";
-import LineOfSight from "./widget/LineOfSight"
 import SymbolGallery, { SymbolGroupId } from "./widget/SymbolGallery";
 import WidgetBase from "./widget/WidgetBase";
+import LineOfSight from "esri/widgets/LineOfSight";
 
 interface MainMenu {
   label: string;
@@ -83,7 +83,7 @@ export default class App extends WidgetBase {
 
   private glTFWidget = new GlTFWidget({app: this});
 
-  private LineOfSight = new LineOfSight({app: this});
+  //private LineOfSight = new LineOfSight({app: this});
 
 
   @property()
@@ -151,6 +151,11 @@ export default class App extends WidgetBase {
       onClick: this.showSymbolGallery.bind(this, SymbolGroupId.Vehicles),
     });
     this.mainMenuEntries.push({
+      label: "Events",
+      iconName: "fas fa-car",
+      onClick: this.showSymbolGallery.bind(this, SymbolGroupId.Events),
+    });
+    this.mainMenuEntries.push({
       label: "glTF",
       iconName: "fas fa-cloud-download-alt",
       onClick: (element) => {
@@ -158,14 +163,18 @@ export default class App extends WidgetBase {
         this.showWidget(this.glTFWidget, element);
       },
     });
-    this.mainMenuEntries.push({
-      label: "Line Of Sight",
-      iconName: "fas fa-layer-group",
-      onClick: this.showWidget.bind(this, this.LineOfSight),
-    });
 
     this.scene.map.when(() => {
       this.thumbnailUrl = this.scene.map.portalItem.getThumbnailUrl(400);
+    });
+
+    const lineOfSight = new LineOfSight({
+      view: view
+    });
+    
+    // Add widget to the bottom left corner of the view
+    view.ui.add(lineOfSight, {
+      position: "top-right"
     });
 
     // Leave a reference of the view on the window for debugging
@@ -193,7 +202,6 @@ export default class App extends WidgetBase {
             <div class="hide" afterCreate={ this.attachWidget.bind(this, this.createBuilding) } />
             <div class="hide" afterCreate={ this.attachWidget.bind(this, this.symbolGallery) } />
             <div class="hide" afterCreate={ this.attachWidget.bind(this, this.glTFWidget)} />
-            <div class="hide" afterCreate={ this.attachWidget.bind(this, this.LineOfSight)} />
 
           </div>
           <div class="bottom">

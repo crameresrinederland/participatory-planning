@@ -54,6 +54,8 @@ export default class PlanningScene extends WidgetBase {
     },
   });
 
+
+  
   public maskPolygon: Polygon;
 
   private sceneLayer: SceneLayer;

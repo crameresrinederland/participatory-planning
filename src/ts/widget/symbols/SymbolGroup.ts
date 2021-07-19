@@ -73,6 +73,8 @@ export default class SymbolGroup extends Accessor {
       case SymbolGroupId.Vehicles:
         return styleName === "EsriRealisticTransportationStyle";
           // || styleName === "EsriInfrastructureStyle";
+      case SymbolGroupId.Events:
+          return styleName === "webstyle_evenementen2";
     }
     return false;
   }

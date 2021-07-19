@@ -41,6 +41,7 @@
     "lint": "tslint --fix \"src/**/*.ts?(x)\""
   },
   "dependencies": {
+    "@types/arcgis-js-api": "4.19.0",
     "css-loader": "^3.4.2"
   },
   "arcgis": {
