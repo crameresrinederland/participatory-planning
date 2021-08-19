@@ -24,6 +24,8 @@ import SymbolItem from "./SymbolItem";
 
 export const SymbolItemCollection = Collection.ofType<SymbolItem>(SymbolItem);
 
+
+
 @subclass("draw.symbolgallery.SymbolGroup")
 export default class SymbolGroup extends Accessor {
 
@@ -39,9 +41,15 @@ export default class SymbolGroup extends Accessor {
     portalItems.then((items) => this.addSymbolItems(items));
   }
 
+  //Here I added styleTitle. My Webstyle doesnt have a StyleName, so I have to retrieve it using the title. 
+  // I also added the function styleTitleMatchesGroup to match the title. 
+
+
   private addSymbolItems(items: PortalItem[]) {
     items.forEach((item) => {
       const styleName = this.getStyleName(item);
+      const styleTitle = item.title;
+
 
       if (this.styleNameMatchesGroup(styleName)) {
         item.fetchData().then((data) => {
@@ -49,6 +57,14 @@ export default class SymbolGroup extends Accessor {
             data.items
             //  .filter((symbolItem: any) => symbolItem.thumbnail.href && symbolItem.dimensionality === "volumetric")
               .map((symbolItem: any) => new SymbolItem(symbolItem, styleName)),
+          );
+        });
+      }
+      if (this.styleTitleMatchesGroup(styleTitle)) {
+        item.fetchData().then((data) => {
+          this.items.addMany(
+            data.items
+              .map((symbolItem: any) => new SymbolItem(symbolItem, styleTitle))
           );
         });
       }
@@ -63,7 +79,9 @@ export default class SymbolGroup extends Accessor {
     }
     return "";
   }
+  
 
+  
   private styleNameMatchesGroup(styleName: string): boolean {
     switch (this.category) {
       case SymbolGroupId.Icons:
@@ -73,10 +91,21 @@ export default class SymbolGroup extends Accessor {
       case SymbolGroupId.Vehicles:
         return styleName === "EsriRealisticTransportationStyle";
           // || styleName === "EsriInfrastructureStyle";
+    }
+    return false;
+  }
+  
+// Created this function to find my webstyle title. It succesfully adds the webstyle to the groups. 
+
+
+  private styleTitleMatchesGroup(styleTitle: string): boolean {
+    switch (this.category) {
       case SymbolGroupId.Events:
-          return styleName === "webstyle_evenementen2";
+          return styleTitle === "webstyle_evenementen2";
     }
     return false;
   }
 
 }
+
+

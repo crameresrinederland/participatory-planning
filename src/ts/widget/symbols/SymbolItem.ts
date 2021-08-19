@@ -35,7 +35,12 @@ export default class SymbolItem extends Accessor {
 
   private fetchPromise: Promise<EsriSymbol>;
 
-  constructor(data: any, styleName: string) {
+
+  // Somewhere here it goes wrong. It cannot retrieve the symbol using the styleName, because apparently styleName is reserved for Esri Styles.
+  // I don't know how to fix this though, I tried using style URL but this didnt work, requires login and stopped the Esri styles from working too. 
+
+// This part makes up what the style is made of I presume. 
+  constructor(data: any, styleName: string, styleUrl: "string") {
     super(data);
     this.thumbnailHref = data.thumbnail.href;
     this.webSymbol = new WebStyleSymbol({
@@ -44,8 +49,10 @@ export default class SymbolItem extends Accessor {
     });
   }
 
+  // This function fetches the symbol from the style. Apparently it needs styleName somewhere, no clue where though. 
   public fetchSymbol(): Promise<EsriSymbol> {
     if (!this.fetchPromise) {
+      console.log(this)
       this.fetchPromise = this.webSymbol.fetchSymbol().then(
         (actualSymbol) => {
 

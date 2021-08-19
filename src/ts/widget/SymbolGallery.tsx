@@ -28,18 +28,30 @@ import DrawWidget from "./DrawWidget";
 import SymbolGroup from "./symbols/SymbolGroup";
 import SymbolItem from "./symbols/SymbolItem";
 
-// Referencing a web style via styleUrl
-let eventSymbol = {
-  type: "web-style",  // autocasts as new WebStyleSymbol()
-  styleUrl: "https://esrinederland.maps.arcgis.com/sharing/rest/content/items/8e40922da45d4a0eafa1be9657906e80/data",
-};
+import OAuthInfo from "esri/identity/OAuthInfo";
+import esriId from "esri/identity/IdentityManager";
 
 export enum SymbolGroupId {
   Icons = "Icons",
   Trees = "Trees",
   Vehicles = "Vehicles",
-  Events = "Events",
+  Events = "Events"
 }
+
+// I manually added my portalItem here. This portalItem is a webstyle consisting of 4 models. 
+const eventStyle = new PortalItem({
+  id: "8051e673ec134e0186833bc258267a6b",
+})
+
+eventStyle.load()
+.then(function(){
+  console.log('loaded')
+// the webmap successfully loaded
+})
+.catch(function(error){
+// the webmap or portal failed to load
+console.log("The resource failed to load: ", error);
+});
 
 @subclass("app.draw.SymbolGallery")
 export default class SymbolGallery extends DrawWidget {
@@ -79,7 +91,6 @@ export default class SymbolGallery extends DrawWidget {
       this.groups.add(new SymbolGroup(SymbolGroupId.Trees, futureItems));
       this.groups.add(new SymbolGroup(SymbolGroupId.Vehicles, futureItems));
       this.groups.add(new SymbolGroup(SymbolGroupId.Events, futureItems));
-
     }
   }
   
@@ -99,6 +110,7 @@ export default class SymbolGallery extends DrawWidget {
   }
 
   private renderSymbolItem(item: SymbolItem) {
+    //console.log(item)
     const href = item.thumbnailHref;
     return (
       <div class="gallery-grid-item" key={href} bind={this} onclick={ this.selectSymbolItem } data-item={item}>
@@ -134,11 +146,15 @@ export default class SymbolGallery extends DrawWidget {
     });
   }
 
+  // I added the last .then() in this function. The part i added pushed the previously loaded webstyle into the results, 
+  // so it is included with the other items. 
+  // Not sure if this works though, so far I havent been able to get any models to actually load. 
+  
   private queryPortalItems(): Promise<PortalItem[]> {
     return this.loadPortal()
       .then((portal) => {
         return portal.queryGroups({
-          query: "(title:\"Esri Styles\" AND owner:esri_en) OR (title:esrinederland AND owner:cramer_esrinederland)",
+          query: "title:\"Esri Styles\" AND owner:esri_en",
         });
       })
       .then((groups: PortalQueryResult) => {
@@ -148,9 +164,11 @@ export default class SymbolGallery extends DrawWidget {
         });
         return groups.results[0].queryItems(queryParams) as Promise<PortalQueryResult>;
       })
-      .then((queryResult) => {
+        .then((queryResult) => {
+          queryResult.results.push(eventStyle)
         return queryResult.results;
-      });
+      })
+
   }
 
 }
